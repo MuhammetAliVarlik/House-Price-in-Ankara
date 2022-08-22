@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+
+<style>
+.container{
+	width:100vw;
+	height:100vh;
+	overflow-x:none;
+	overflow-y:none;
+	margin: 0;
+	position:absolute;
+	padding:0;
+}
+.foreground{
+	width: 100vw;
+	height: 100vh;
+	z-index: 2;
+	position:absolute; 
+	background-color: rgba(0,0,0,0.5);
+
+display: flex;
+  justify-content: center;
+}
+body {
+   margin: 0;
+   padding: 0;
+}
+.slider{
+position:relative;
+width:100%;
+height:55vw;
+float:left; 
+
+	 }
+#slider{
+  position:absolute;
+  float:left;
+  width:100%;
+  height:100%;
+  background-color:black;
+  z-index:0;    
+}
+.mySlides{
+  position:relative;
+  height:100%;  
+}
+.slide_img{
+ object-fit: cover;
+  object-position: 100% 20%;
+  width: 100%;
+  max-height:100%; 
+  overflow: hidden;
+  display:block;
+  margin-left: auto;
+  margin-right: auto; 
+}
+
+/* Slideshow container */
+.slideshow-container {
+  width:100%;
+  height:100%;  
+  position: relative;
+  margin: auto;
+}
+.text{
+	position: fixed;
+	top:10%;
+	width:30vw;
+	border-radius:3vw; 
+	height:auto;
+	font-size:3vw;   
+	text-align:center;
+	margin: 0 auto;
+	color:white;
+
+}
+.inputs{
+	position: relative;
+	float:left;
+	margin-top:5%;
+	left: 50%;
+	transform: translateX(-50%); 
+	width:90%;
+	border-radius:3vw; 
+	height:auto;
+	font-size:1.5vw;   
+	text-align:center;
+	color:white;
+  	background-color:rgba(0,0,0,0.7); 
+  	border-bottom:1px solid lime; 
+  	border-right: 1px solid lime; 
+
+
+}
+.inputs::placeholder{
+	color:white;
+}
+.inp{
+	position:fixed;
+	width:30vw;
+	height:78vh;
+	top:20%;
+
+	display: inline-block;
+  	box-sizing: border-box;
+
+}
+.button {
+  background-color: lime; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top:5%;
+  cursor: pointer;
+  position: relative;
+  left: 50%;
+  border-radius:3vw; 
+  transform: translateX(-50%); 
+}
+.result{
+  border: none;
+  font-size: 1.75vw;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin-top:2%;
+  cursor: pointer;
+  position: relative;
+  left: 50%; 
+  transform: translateX(-50%);
+  width:90%;
+  background-color: rgba(0,0,0,0.7);
+  border-radius:3vw; 
+}
+.datas{
+	font-size:1vw;
+	color:white; 
+
+
+}
+</style>
+</head>
+<body>
+<div class="container">
+	<div id="slider">
+        <div class="slideshow-container" id="slidercontrol">
+            <div class="mySlides fade">
+              <img src="{{url_for('static',filename = '/img/1.jpg')}}" class="slide_img">
+            </div>
+            <div class="mySlides fade">
+              <img src="{{url_for('static',filename = '/img/2.jpg')}}" class="slide_img">
+            </div>
+            <div class="mySlides fade">
+              <img src="{{url_for('static',filename = '/img/3.jpg')}}" class="slide_img">
+            </div>   
+        </div>
+    </div>
+	<div class="foreground">
+		<div class="text">Ankara Ev Fiyatları</div>
+		<div class="inp">
+		<form id="myForm"action="predict_home_price"method="POST">
+			<input name='number_of_rooms'type="number" placeholder="Oda sayısı.." class="inputs"autocomplete="off"min="0"required>
+			<input name='m2'type="number" placeholder="Metrekare.." class="inputs"autocomplete="off"min="0"required>
+			<input name='building_age'type="number" placeholder="Bina yaşı.." class="inputs"autocomplete="off"min="0"required>
+			<input name='bath_number'type="number" placeholder="Banyo sayısı.." class="inputs"autocomplete="off"min="0"required>
+
+			<select name="warming_type" id="warming_type"class="inputs">
+				<option value="Kombi"selected>Isınma tipi..</option>
+			</select>
+
+			<select name="credit_eligible" id="credit_eligible"class="inputs">
+				<option value="Uygun"selected>Krediye uygunluk..</option>
+			</select>
+
+			<select name="floor_location" id="floor_location"class="inputs">
+				<option value="1. Kat"selected>Kat..</option>
+			</select>
+
+			<select name="district" id="district"class="inputs">
+				<option value="Çankaya"selected>İlçe..</option>
+			</select>
+			<button class="button"id="submitButton"type="submit">Hesapla</button>
+		</form>
+		<h2 class="result">
+		
+		{% if data %}
+		<p style="float:left;position: relative;text-indent: 25px;">  Tahmini fiyat:</p> <p style="color:lime;float:left;position: relative;"> {{data}} ₺</p>
+		{% else %}
+		{% endif %}
+		</h2>
+		</div>
+		<p class="datas">Tüm veriler <a href="https://www.kaggle.com/datasets/kumruorkun/housing-market-ankara">https://www.kaggle.com/datasets/kumruorkun/housing-market-ankara</a> adresinden alınmıştır.</p>
+	
+	</div>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+var slideIndex = 1;
+showSlides(slideIndex);
+function plusSlides(n) {
+showSlides(slideIndex += n);
+}
+function currentSlide(n) {
+showSlides(slideIndex = n);
+}
+function showSlides(n) {
+var i;
+var slides = document.getElementsByClassName("mySlides");
+if (n > slides.length) {slideIndex = 1}    
+if (n < 1) {slideIndex = slides.length}
+for (i = 0; i < slides.length; i++) {
+slides[i].style.display = "none";  
+}
+
+slides[slideIndex-1].style.display = "block";  
+}
+setInterval(function(){
+slideIndex++;
+showSlides(slideIndex);
+},7000);
+
+window.onload= onload();
+
+function onload(){
+
+//Create array of options to be added
+var array = ['Kombi', 'Merkezi(PayÖlçer)', 'Merkezi', 'KatKaloriferi', 'Klima'];
+
+var selectList = document.getElementById("warming_type");
+//Create and append the options
+for (var i = 0; i < array.length; i++) {
+    var option = document.createElement("option");
+    option.value = array[i];
+    option.text = array[i];
+    selectList.appendChild(option);
+}
+
+//Create array of options to be added
+var array = ['Uygun', 'Uygun değil'];
+
+var selectList = document.getElementById("credit_eligible");
+//Create and append the options
+for (var i = 0; i < array.length; i++) {
+    var option = document.createElement("option");
+    option.value = array[i];
+    option.text = array[i];
+    selectList.appendChild(option);
+}
+
+//Create array of options to be added
+var array = ['Kot 1', '1. Kat', '3. Kat', '2. Kat', 'Ara Kat', 'Bahçe Katı', 'Teras Katı', 'Yüksek Giriş', '4. Kat', 'En Üst Kat', '9. Kat', 'Kot 2', '5. Kat', '6. Kat', '7. Kat', '21 ve üzeri', 'Giriş Katı', '13. Kat', 'Zemin', '12. Kat', '14. Kat', '11. Kat', '15. Kat', '20. Kat', 'Kot 3', '8. Kat', '17. Kat', 'Çatı Katı', '16. Kat', '10. Kat', '19. Kat', 'Bodrum', 'Villa Katı'];
+
+var selectList = document.getElementById("floor_location");
+//Create and append the options
+for (var i = 0; i < array.length; i++) {
+    var option = document.createElement("option");
+    option.value = array[i];
+    option.text = array[i];
+    selectList.appendChild(option);
+}
+
+//Create array of options to be added
+var array = ['Çankaya', 'Keçiören', 'Sincan', 'Mamak'];
+
+var selectList = document.getElementById("district");
+//Create and append the options
+for (var i = 0; i < array.length; i++) {
+    var option = document.createElement("option");
+    option.value = array[i];
+    option.text = array[i];
+    selectList.appendChild(option);
+}
+
+
+
+
+
+}
+
+
+
+
+</script>	
+
+</body>
